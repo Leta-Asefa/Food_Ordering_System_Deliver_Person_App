@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { Text, View, Image, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, Alert, ToastAndroid, ImageBackground } from 'react-native'
+import { Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, ToastAndroid, ImageBackground } from 'react-native'
 import validationSchema from '../../validations/login'
-import api from '../../utilities_and_constants/axiosInstance'
 import backgroud from '../../assets/background.png'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const header = 'text-center text-3xl font-bold mt-14 text-primary'
 const image = 'w-40 h-40 mx-auto rounded-full my-3'
@@ -37,12 +38,29 @@ export default function Login({ navigation }) {
   const handleSubmit = async () => {
     const isValid = await validateInputs({ username, password })
     if (isValid) {
-      //   const response=await api.post('/login',{username,password})
-      //  do the login here
+      const formData = { username, password }
+      const response = await axios.post(`http://localhost:4000/user/login`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.user._id) {
+        await AsyncStorage.setItem('authUser', JSON.stringify(response.data))
+        navigation.navigate('bottomTabs')
+      } else {
+        console.log('response got an error')
+      }
+
     }
     else {
+
       ToastAndroid.showWithGravity(error, ToastAndroid.LONG, ToastAndroid.TOP)
+
     }
+
+
   }
 
 
@@ -97,15 +115,15 @@ export default function Login({ navigation }) {
                 <Text className='text-center text-white text-2xl font-bold'>Login</Text>
               </TouchableOpacity>
 
-              
-                <TouchableOpacity onPress={() => navigation.navigate('restaurants_list')}>
-                  <Text className={footer}>create new account ?</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity>
-                  <Text className={footer}>forgot password ?</Text>
-                </TouchableOpacity>
-         
+              <TouchableOpacity onPress={() => navigation.navigate('signup')}>
+                <Text className={footer}>create new account ?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <Text className={footer}>forgot password ?</Text>
+              </TouchableOpacity>
+
             </View>
 
           </View>
