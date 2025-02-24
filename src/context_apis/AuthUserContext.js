@@ -13,23 +13,6 @@ export const useAuthUserContext = () => {
 export const AuthUserContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
 
-  useEffect(() => {
-    // Sync authUser to async storage whenever it changes
-    const loadUser = async () => {
-      const authUser = await AsyncStorage.getItem('authUser');
-      if (authUser) {
-        setAuthUser(JSON.parse(authUser));
-      }
-      else {
-         await AsyncStorage.removeItem('authUser');
-      }
-
-    }
-
-    loadUser()
-
-  }, [authUser]);
-
   return (
     <AuthUserContext.Provider value={{ authUser, setAuthUser }}>
       {children}

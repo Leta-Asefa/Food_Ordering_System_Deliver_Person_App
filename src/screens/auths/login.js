@@ -4,6 +4,7 @@ import validationSchema from '../../validations/login'
 import backgroud from '../../assets/background.png'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuthUserContext } from '../../context_apis/AuthUserContext'
 
 const header = 'text-center text-3xl font-bold mt-14 text-primary'
 const image = 'w-40 h-40 mx-auto rounded-full my-3'
@@ -17,6 +18,7 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState('')
   const [isUsernameFocused, setIsUsernameFocused] = useState(false)
   const [isPasswordFocused, setIsPasswordFocused] = useState(false)
+  const {setAuthUser}=useAuthUserContext()
 
   const [error, setError] = useState([])
 
@@ -48,6 +50,7 @@ export default function Login({ navigation }) {
 
       if (response.data.user._id) {
         await AsyncStorage.setItem('authUser', JSON.stringify(response.data))
+        setAuthUser(response.data)
         navigation.navigate('bottomTabs')
       } else {
         console.log('response got an error')
