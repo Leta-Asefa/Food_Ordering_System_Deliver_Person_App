@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import DeliveryHistory from "./DeliveryHistory";
 import { useSocketContext } from "../../context_apis/SocketContext";
+import axios from "axios";
+import { useAuthUserContext } from "../../context_apis/AuthUserContext";
 
-const Offers = () => {
+const Offers = ({navigation}) => {
 
     const [currentOffer, setCurrentOffer] = useState();
-    const  socket  = useSocketContext()
+    const { authUser } = useAuthUserContext()
+    const socket = useSocketContext()
 
     useEffect(() => {
         if (socket) {
 
             socket.on('offer', (notification) => {
                 setCurrentOffer(notification)
+                // Set a timeout to clear the offer after 45 seconds
+                const timeoutId = setTimeout(() => {
+                    console.log("Offer expired after 45 seconds.");
+                    setCurrentOffer(null);
+                }, 45000); // 45 seconds in milliseconds
+
+                // Cleanup the timeout if the component unmounts or a new offer arrives
+                return () => {
+                    clearTimeout(timeoutId);
+                };
             }
             )
             return () => socket.off('offer')
@@ -20,6 +33,23 @@ const Offers = () => {
     }, [socket])
 
     const handleAcceptOffer = async () => {
+
+        try {
+            const response = await axios.put(`http://localhost:4000/order/${currentOffer?.orderId}/deliveryperson`, { deliveryPersonId: authUser.user._id }, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true,
+            });
+
+            if (response.data.message) {
+                setCurrentOffer(null)
+                Alert.alert("Offer Accepted !", "Dear Delivery Person ,you are assigned to the order. Please go to the restaurant and pick it up.")
+                navigation.navigate('currentorder')
+            }
+
+
+        } catch (error) {
+            console.error("Error fetching order:", error);
+        }
 
     }
 
@@ -35,7 +65,7 @@ const Offers = () => {
             <View className="p-4 bg-white shadow-sm border-b border-orange-600">
                 <Text className="text-xl font-bold mb-2">Current Offer</Text>
                 {currentOffer ? (
-                    <View className="bg-green-50 p-3 rounded-lg">
+                    <View className="bg-green-100 p-3 rounded-lg">
                         <Text className="text-green-700 font-semibold">
                             New Offer Available!
                         </Text>

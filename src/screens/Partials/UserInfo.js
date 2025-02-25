@@ -3,11 +3,38 @@ import { View, StyleSheet, Switch, Image, Text } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
 import { useLocationContext } from "../../context_apis/Location";
+import { useSocketContext } from "../../context_apis/SocketContext";
+import axios from "axios";
 
 const UserInfo = () => {
-  const { authUser } = useAuthUserContext();
+  const { authUser,setAuthUser } = useAuthUserContext();
   const { address } = useLocationContext()
   const [isActive, setIsActive] = useState(authUser.user.isActive)
+
+    const socket = useSocketContext()
+  
+      useEffect(() => {
+          if (socket) {
+  
+              socket.on('updateAvailablity', (status) => {
+                  console.log("order from io ",status)
+                  setAuthUser((prevAuthUser) => ({
+                    ...prevAuthUser, // Keep other fields unchanged
+                    user: {
+                        ...prevAuthUser.user, // Keep other user fields unchanged
+                        isActive: status, // Update only the isActive field
+                    },
+                }));
+
+                setIsActive(status)
+
+              }
+              )
+              return () => socket.off('updateAvailablity')
+          }
+      }, [socket])
+
+
 
   const updateStatus = async () => {
       try {
@@ -17,7 +44,7 @@ const UserInfo = () => {
   
           // Send the update request to the backend
           const response = await axios.put(`http://localhost:4000/user/${authUser.user._id}`, { isActive: newStatus });
-  
+  console.log(response.data)
           // Check if the backend response is successful
           if (!response.data.message) {
               // If not successful, reset the state to previous value (optional)

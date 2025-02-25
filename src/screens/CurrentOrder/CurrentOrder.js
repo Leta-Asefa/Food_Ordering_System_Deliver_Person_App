@@ -6,6 +6,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useLocationContext } from "../../context_apis/Location";
 import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapScreen from "./MapScreen";
+import { useSocketContext } from "../../context_apis/SocketContext";
 
 
 const CurrentOrder = () => {
@@ -13,6 +14,23 @@ const CurrentOrder = () => {
     const [loading, setLoading] = useState(true);
     const { authUser } = useAuthUserContext();
     const { address, longitude, latitude } = useLocationContext()
+    const socket = useSocketContext()
+
+    useEffect(() => {
+        if (socket) {
+
+            socket.on('currentOrder', (data) => {
+                console.log("order from io ", data.order)
+                setOrder(data.order)
+            }
+            )
+            return () => socket.off('currentOrder')
+        }
+    }, [socket])
+
+
+
+
     const routeCoordinates = [
         {
             latitude: 9.18759536743164,
@@ -42,11 +60,15 @@ const CurrentOrder = () => {
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/order/deliveryperson/${authUser.user._id}`, {
+                const response = await axios.get(`http://localhost:4000/order/assignedorder/${authUser.user._id}`, {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true,
                 });
-                setOrder(response.data);
+
+
+                if (response.data)
+                    setOrder(response.data);
+
             } catch (error) {
                 console.error("Error fetching order:", error);
             } finally {
