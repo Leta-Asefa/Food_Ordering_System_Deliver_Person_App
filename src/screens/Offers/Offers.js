@@ -3,8 +3,8 @@ import { View, Text, Alert } from "react-native";
 import DeliveryHistory from "./DeliveryHistory";
 import { useSocketContext } from "../../context_apis/SocketContext";
 import axios from "axios";
-import Sound from "react-native-sound";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
+import { playNotificationSound } from "../../helpers/constants";
 
 const Offers = ({ navigation }) => {
 
@@ -12,23 +12,7 @@ const Offers = ({ navigation }) => {
     const { authUser, setAuthUser } = useAuthUserContext()
     const socket = useSocketContext()
 
-    const playNotificationSound = () => {
-        console.log("Attempting to play sound...");
-        const sound = new Sound("notification.mp3", Sound.MAIN_BUNDLE, (error) => {
-            if (error) {
-                console.log("Sound loading error:", error);
-                return;
-            }
-    
-            sound.setVolume(1);
-            sound.play((success) => {
-                if (!success) {
-                    console.log("Sound playback failed due to decoding errors.");
-                }
-                sound.release(); // Free memory after playing
-            });
-        });
-    };
+  
     
 
     useEffect(() => {

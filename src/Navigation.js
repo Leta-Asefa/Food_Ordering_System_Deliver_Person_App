@@ -9,6 +9,7 @@ import UserSettings from "./screens/Settings/Settings";
 import UserInfo from "./screens/Partials/UserInfo";
 import Offers from "./screens/Offers/Offers";
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
+import RatingAndReview from "./screens/RatingAndReview/RatingAndReview";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +61,8 @@ const TabNavigation = () => {
               iconName = focused ? 'list' : 'list-outline';
             } else if (route.name === 'offers') {
               iconName = focused ? 'pricetag' : 'pricetag-outline';
+            } else if (route.name === 'rating') {
+              iconName = focused ? 'star' : 'star-outline';
             }
 
             // Return the icon component
@@ -71,6 +74,7 @@ const TabNavigation = () => {
         <Tab.Screen name="qrcodescanner" component={QRScanner} />
         <Tab.Screen name="currentorder" component={CurrentOrder} />
         <Tab.Screen name="offers" component={Offers} />
+        <Tab.Screen name="rating" component={RatingAndReview} />
       </Tab.Navigator>
     );
 };

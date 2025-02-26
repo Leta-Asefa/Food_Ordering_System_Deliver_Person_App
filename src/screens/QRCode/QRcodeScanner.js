@@ -8,6 +8,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
 import axios from "axios";
+import { playNotificationSound } from "../../helpers/constants";
 
 const QRScanner = () => {
   const { authUser } = useAuthUserContext()
@@ -37,9 +38,10 @@ const QRScanner = () => {
         });
         console.log(response.data)
 
-        if (response.data.verified)
+        if (response.data.verified) {
           Alert.alert("Order Id is correct", 'The order id is correct. Order status is changed to "Delivered".')
-        else
+          playNotificationSound()
+        } else
           Alert.alert("Oops! Invalid Id", 'This is not your delivery order id.')
 
 
