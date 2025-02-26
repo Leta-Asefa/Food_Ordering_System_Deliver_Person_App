@@ -3,6 +3,7 @@ import { View, Text, Alert } from "react-native";
 import DeliveryHistory from "./DeliveryHistory";
 import { useSocketContext } from "../../context_apis/SocketContext";
 import axios from "axios";
+import Sound from "react-native-sound";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
 
 const Offers = ({ navigation }) => {
@@ -11,11 +12,31 @@ const Offers = ({ navigation }) => {
     const { authUser, setAuthUser } = useAuthUserContext()
     const socket = useSocketContext()
 
+    const playNotificationSound = () => {
+        console.log("Attempting to play sound...");
+        const sound = new Sound("notification.mp3", Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log("Sound loading error:", error);
+                return;
+            }
+    
+            sound.setVolume(1);
+            sound.play((success) => {
+                if (!success) {
+                    console.log("Sound playback failed due to decoding errors.");
+                }
+                sound.release(); // Free memory after playing
+            });
+        });
+    };
+    
+
     useEffect(() => {
         if (socket) {
 
             socket.on('offer', (notification) => {
                 setCurrentOffer(notification)
+                playNotificationSound()
                 // Set a timeout to clear the offer after 45 seconds
                 const timeoutId = setTimeout(() => {
                     console.log("Offer expired after 45 seconds.");
@@ -60,14 +81,13 @@ const Offers = ({ navigation }) => {
 
     const updateStatus = async () => {
         const previousStatus = authUser.user.isActive; // Save current state
-        const newStatus = !previousStatus; // Toggle state
 
         // Optimistically update UI
         setAuthUser((prevAuthUser) => ({
             ...prevAuthUser,
             user: {
                 ...prevAuthUser.user,
-                isActive: newStatus,
+                isActive: false,
             },
         }));
 
@@ -75,7 +95,7 @@ const Offers = ({ navigation }) => {
             // Send update request to the backend
             const response = await axios.put(
                 `http://localhost:4000/user/${authUser.user._id}`,
-                { isActive: newStatus }
+                { isActive: false }
             );
 
             // If API call fails, revert state
