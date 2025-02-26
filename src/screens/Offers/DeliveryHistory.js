@@ -91,7 +91,7 @@ const DeliveryHistory = () => {
                         <Text className="font-semibold">Customer:</Text> {order.userId.username}
                     </Text>
                     <Text className="text-gray-600 mb-1">
-                        <Text className="font-semibold">Address:</Text> {order.shippingAddress.address}
+                        <Text className="font-semibold">Delivery Address:</Text> {order.shippingAddress.address}
                     </Text>
                     <Text className="text-gray-600">
                         <Text className="font-semibold">ETA:</Text> {order.eta}

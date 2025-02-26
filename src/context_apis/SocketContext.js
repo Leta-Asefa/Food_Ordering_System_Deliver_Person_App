@@ -19,15 +19,14 @@ export const SocketContextProvider = ({ children }) => {
         const newSocket = io('http://localhost:4000',{ query: {role:'delivery_person',userId:authUser?.user._id},withCredentials:true});
         setSocket(newSocket);
 
-        console.log("socket connecting ...")
 
         // Handle connection and disconnection events
         newSocket.on('connect', () => {
-            console.log('Connected to the server');
+            console.log('Connected to socket.io server');
         });
 
         newSocket.on('disconnect', () => {
-            console.log('Disconnected from the server');
+            console.log('Disconnected from socket.io server');
         });
 
         return () => {

@@ -5,10 +5,10 @@ import { useSocketContext } from "../../context_apis/SocketContext";
 import axios from "axios";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
 
-const Offers = ({navigation}) => {
+const Offers = ({ navigation }) => {
 
     const [currentOffer, setCurrentOffer] = useState();
-    const { authUser } = useAuthUserContext()
+    const { authUser, setAuthUser } = useAuthUserContext()
     const socket = useSocketContext()
 
     useEffect(() => {
@@ -43,6 +43,7 @@ const Offers = ({navigation}) => {
             if (response.data.message) {
                 setCurrentOffer(null)
                 Alert.alert("Offer Accepted !", "Dear Delivery Person ,you are assigned to the order. Please go to the restaurant and pick it up.")
+                updateStatus()
                 navigation.navigate('currentorder')
             }
 
@@ -57,6 +58,49 @@ const Offers = ({navigation}) => {
         setCurrentOffer(null)
     }
 
+    const updateStatus = async () => {
+        const previousStatus = authUser.user.isActive; // Save current state
+        const newStatus = !previousStatus; // Toggle state
+
+        // Optimistically update UI
+        setAuthUser((prevAuthUser) => ({
+            ...prevAuthUser,
+            user: {
+                ...prevAuthUser.user,
+                isActive: newStatus,
+            },
+        }));
+
+        try {
+            // Send update request to the backend
+            const response = await axios.put(
+                `http://localhost:4000/user/${authUser.user._id}`,
+                { isActive: newStatus }
+            );
+
+            // If API call fails, revert state
+            if (!response.data.message) {
+                setAuthUser((prevAuthUser) => ({
+                    ...prevAuthUser,
+                    user: {
+                        ...prevAuthUser.user,
+                        isActive: previousStatus,
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+
+            // Revert state on error
+            setAuthUser((prevAuthUser) => ({
+                ...prevAuthUser,
+                user: {
+                    ...prevAuthUser.user,
+                    isActive: previousStatus,
+                },
+            }));
+        }
+    };
 
     return (
         <View className="flex-1">
