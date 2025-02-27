@@ -1,4 +1,4 @@
-package com.influencers_marketing
+package com.delivery
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,4 +1,4 @@
-package com.influencers_marketing
+package com.delivery
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
