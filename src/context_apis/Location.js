@@ -62,7 +62,8 @@ export const LocationContextProvider = ({ children }) => {
           longitude,
           username:authUser.user.username,
           phoneNumber:authUser.user.phoneNumber,
-          image:authUser.user.image
+          image:authUser.user.image,
+          employer:authUser.user.employer
         });
         console.log("Location sent!",response);
       } catch (error) {

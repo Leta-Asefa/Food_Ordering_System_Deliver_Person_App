@@ -9,23 +9,26 @@ import { playNotificationSound } from "../../helpers/constants";
 const Offers = ({ navigation }) => {
 
     const [currentOffer, setCurrentOffer] = useState();
+    const [offerExpired, setOfferExpired] = useState(false)
     const { authUser, setAuthUser } = useAuthUserContext()
     const socket = useSocketContext()
 
-  
-    
+
+
 
     useEffect(() => {
         if (socket) {
 
             socket.on('offer', (notification) => {
+                console.log("offer accepted !")
                 setCurrentOffer(notification)
+                setOfferExpired(false)
                 playNotificationSound()
                 // Set a timeout to clear the offer after 45 seconds
                 const timeoutId = setTimeout(() => {
                     console.log("Offer expired after 45 seconds.");
-                    setCurrentOffer(null);
-                }, 45000); // 45 seconds in milliseconds
+                    setOfferExpired(true)
+                }, 20000); // 45 seconds in milliseconds
 
                 // Cleanup the timeout if the component unmounts or a new offer arrives
                 return () => {
@@ -40,7 +43,7 @@ const Offers = ({ navigation }) => {
     const handleAcceptOffer = async () => {
 
         try {
-            const response = await axios.put(`http://localhost:4000/order/${currentOffer?.orderId}/deliveryperson`, { deliveryPersonId: authUser.user._id }, {
+            const response = await axios.put(`http://localhost:4000/order/${currentOffer?.orderId}/deliveryperson`, { deliveryPersonId: authUser.user._id, restaurantId: currentOffer.restaurantId }, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true,
             });
@@ -60,8 +63,32 @@ const Offers = ({ navigation }) => {
     }
 
     const handleDeclineOffer = async () => {
-        setCurrentOffer(null)
+        try {
+            const response = await axios.post(`http://localhost:4000/order/${currentOffer?.orderId}/deliveryoffer/${currentOffer.restaurantId}`, { deliveryPersonId: authUser.user._id, restaurantId: currentOffer.restaurantId }, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true,
+            });
+
+            console.log(response)
+
+            if (response.data.message) {
+                Alert.alert("Offer Declined !", "Wait till another offer comes !")
+            }
+
+            setCurrentOffer(null)
+
+        } catch (error) {
+            console.error("Error fetching order:", error);
+        }
+
     }
+
+
+    useEffect(() => {
+        if (offerExpired)
+            handleDeclineOffer()
+
+    }, [offerExpired])
 
     const updateStatus = async () => {
         const previousStatus = authUser.user.isActive; // Save current state
