@@ -10,9 +10,10 @@ const Offers = ({ navigation }) => {
 
     const [currentOffer, setCurrentOffer] = useState();
     const [offerExpired, setOfferExpired] = useState(false)
+    const [offerAccepted, setOfferAccepted] = useState(false)
     const { authUser, setAuthUser } = useAuthUserContext()
     const socket = useSocketContext()
-
+    let timeoutId=null
 
 
 
@@ -25,10 +26,10 @@ const Offers = ({ navigation }) => {
                 setOfferExpired(false)
                 playNotificationSound()
                 // Set a timeout to clear the offer after 45 seconds
-                const timeoutId = setTimeout(() => {
+                 timeoutId = setTimeout(() => {
                     console.log("Offer expired after 45 seconds.");
                     setOfferExpired(true)
-                }, 20000); // 45 seconds in milliseconds
+                }, 20000); //20 seconds in milliseconds
 
                 // Cleanup the timeout if the component unmounts or a new offer arrives
                 return () => {
@@ -52,6 +53,7 @@ const Offers = ({ navigation }) => {
                 setCurrentOffer(null)
                 Alert.alert("Offer Accepted !", "Dear Delivery Person ,you are assigned to the order. Please go to the restaurant and pick it up.")
                 updateStatus()
+                setOfferAccepted(true)
                 navigation.navigate('currentorder')
             }
 
@@ -85,7 +87,7 @@ const Offers = ({ navigation }) => {
 
 
     useEffect(() => {
-        if (offerExpired)
+        if (offerExpired && !offerAccepted)
             handleDeclineOffer()
 
     }, [offerExpired])

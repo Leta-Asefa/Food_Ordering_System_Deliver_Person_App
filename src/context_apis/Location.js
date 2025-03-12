@@ -63,7 +63,8 @@ export const LocationContextProvider = ({ children }) => {
           username:authUser.user.username,
           phoneNumber:authUser.user.phoneNumber,
           image:authUser.user.image,
-          employer:authUser.user.employer
+          employer:authUser.user.employer,
+          rating:authUser.user.rating
         });
         console.log("Location sent!",response);
       } catch (error) {
