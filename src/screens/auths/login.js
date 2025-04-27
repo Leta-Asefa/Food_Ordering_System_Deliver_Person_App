@@ -123,7 +123,7 @@ export default function Login({ navigation }) {
                 <Text className={footer}>create new account ?</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('forgot_password')}>
                 <Text className={footer}>forgot password ?</Text>
               </TouchableOpacity>
 

@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useAuthUserContext } from "../../context_apis/AuthUserContext";
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 
 const RatingAndReview = () => {
     const {authUser}=useAuthUserContext()
@@ -32,8 +33,9 @@ const RatingAndReview = () => {
     return (
         <View className="flex-1 bg-white">
         {/* Header */}
-        <View className="py-2 bg-gray-100 border-b border-gray-200">
-          <Text className="text-lg font-bold text-center">Your Rating: {authUser.user.rating}</Text>
+        <View className="py-2 w-56 mx-auto   bg-transparent border-b border-gray-200 flex flex-row items-center justify-center">
+          <Text className="text-lg font-bold text-center w-40">Your Rating:  {authUser.user.rating}</Text>
+          <Ionicons name="star" size={20} color="orange" />
         </View>
   
         {/* Reviews List */}
