@@ -160,7 +160,7 @@ const CurrentOrder = () => {
           }, 5000);
 
       } catch (error) {
-        console.error('Error fetching order:', error);
+        console.error('Error fetching assigned order:', error);
       } finally {
         setLoading(false);
       }
@@ -177,12 +177,18 @@ const CurrentOrder = () => {
     );
   }
 
-  if (!order) {
+  if (!order || !order._id) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-lg text-gray-500">
-          No current order available
-        </Text>
+      <View className="flex-1 items-center justify-center bg-gray-50 px-6">
+        <View className="bg-white rounded-2xl shadow-md px-8 py-10 items-center border border-gray-200">
+          <Icon name="alert-circle-outline" size={48} color="#9CA3AF" />
+          <Text className="text-xl font-semibold text-gray-700 mt-4 mb-2">
+            No Current Order
+          </Text>
+          <Text className="text-base text-gray-500 text-center">
+            You have no active orders assigned at the moment.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -203,7 +209,7 @@ const CurrentOrder = () => {
     <View className="flex-1">
       <Text className="text-gray-900 font-semibold">Delivery Address</Text>
       <Text className="text-gray-600 text-sm leading-snug">
-        {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.country}
+        {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.country}
       </Text>
     </View>
   </View>

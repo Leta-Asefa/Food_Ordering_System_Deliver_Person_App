@@ -26,7 +26,7 @@ const Offers = ({navigation}) => {
         playNotificationSound();
         // Set a timeout to clear the offer after 45 seconds
         timeoutId = setTimeout(() => {
-          console.log('Offer expired after 45 seconds.');
+          console.log('Offer expired after 20 seconds.');
           setOfferExpired(true);
         }, 20000); //20 seconds in milliseconds
 
