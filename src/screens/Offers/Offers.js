@@ -12,7 +12,7 @@ const Offers = ({navigation}) => {
   const [offerExpired, setOfferExpired] = useState(false);
   const [offerAccepted, setOfferAccepted] = useState(false);
   const {authUser, setAuthUser} = useAuthUserContext();
-  const {setCurrentOfferTracker} = useLocationContext();
+  const {setCurrentOfferTracker,setCurrentOrder} = useLocationContext();
   const socket = useSocketContext();
   let timeoutId = null;
 
@@ -55,6 +55,7 @@ const Offers = ({navigation}) => {
         console.log("setting current offer userId tracker to ",currentOffer)
         setCurrentOfferTracker(currentOffer.userId)
       //  setCurrentOffer(null);
+      setCurrentOrder(currentOffer) // just to trigger current order update on the current order screen
         Alert.alert(
           'Offer Accepted !',
           'Dear Delivery Person ,you are assigned to the order. Please go to the restaurant and pick it up.',

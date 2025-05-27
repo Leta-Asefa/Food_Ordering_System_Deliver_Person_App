@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {
   Alert,
   ImageBackground,
+  Modal,
+  Pressable,
   Text,
   TouchableOpacity,
   View,
@@ -21,19 +23,25 @@ const QRScanner = () => {
   const {authUser} = useAuthUserContext();
   const [hasPermission, setHasPermission] = useState(false);
   const [scannedValue, setScannedValue] = useState(null);
-  const {realTimeTrackerId} = useLocationContext();
+  const [lastScanTime, setLastScanTime] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', message: '' });
+  const {setCurrentOfferTracker,setCurrentOrder} = useLocationContext();
   const device = useCameraDevice('back');
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: codes => {
-      setScannedValue(codes[0].value);
-      verifyOrderId(codes[0].value);
+      const now = Date.now();
+      if (now - lastScanTime > 1500) { // 1.5s cooldown
+        setScannedValue(codes[0].value);
+        verifyOrderId(codes[0].value);
+        setLastScanTime(now);
+      }
     },
   });
 
   const verifyOrderId = async newScannedValue => {
     try {
-      if (scannedValue !== newScannedValue) {
         const response = await axios.get(
           `http://localhost:4000/order/verify/${newScannedValue}/${authUser.user._id}`,
           {
@@ -46,19 +54,24 @@ const QRScanner = () => {
         console.log(response.data);
 
         if (response.data.verified) {
-          Alert.alert(
-            'Order Id is correct',
-            'The order id is correct. Order status is changed to "Delivered".',
-          );
-          clearInterval(realTimeTrackerId);
+          setModalContent({
+            title: 'Order Id is correct',
+            message: 'The order id is correct. Order status is changed to "Delivered".',
+          });
+          setModalVisible(true);
           playNotificationSound();
-        } else
-          Alert.alert(
-            'Oops! Invalid Id',
-            'This is not your delivery order id.',
-          );
-      }
-    } catch (error) {}
+          setCurrentOfferTracker(null);
+          setCurrentOrder(null)
+        } else {
+          setModalContent({
+            title: 'Oops! Invalid Id',
+            message: 'This is not your delivery order id.',
+          });
+          setModalVisible(true);
+        }
+    } catch (error) {
+      console.log("qr scanner verificatoin ",error)
+    }
   };
 
   useEffect(() => {
@@ -84,6 +97,27 @@ const QRScanner = () => {
 
   return (
     <View className="p-0 h-screen">
+      {/* Modal for showing messages */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+          <View style={{ backgroundColor: 'white', borderRadius: 10, padding: 24, minWidth: 280, alignItems: 'center' }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>{modalContent.title}</Text>
+            <Text style={{ fontSize: 16, marginBottom: 16 }}>{modalContent.message}</Text>
+            <Pressable
+              style={{ backgroundColor: '#f97316', borderRadius: 6, paddingVertical: 8, paddingHorizontal: 24 }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
       <View className=" w-full h-[500] ">
         <Camera
           codeScanner={codeScanner}

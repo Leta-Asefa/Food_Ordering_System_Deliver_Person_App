@@ -23,7 +23,8 @@ export const LocationContextProvider = ({children}) => {
   const [longitude, setLongitude] = useState(0);
   const [address, setAddress] = useState('');
   const [realTimeTrackerId, setRealTimeTrackerId] = useState(null);
-  const [currentOfferTracker, setCurrentOfferTracker] = useState({});
+  const [currentOfferTracker, setCurrentOfferTracker] = useState(null);
+  const [currentOrder,setCurrentOrder]=useState(null)
   const currentOfferTrackerRef = useRef(currentOfferTracker);
   const {authUser} = useAuthUserContext();
   const watchIdRef = useRef(null);
@@ -163,6 +164,8 @@ console.log("Current Offer Tracker Updated: ", currentOfferTracker);
         setRealTimeTrackerId,
         currentOfferTracker,
         setCurrentOfferTracker,
+        currentOrder,
+        setCurrentOrder
       }}>
       {children}
     </LocationContext.Provider>
