@@ -35,12 +35,12 @@ const CurrentOrder = () => {
 
       console.log("end point ",`http://localhost:4000/gps/deliveryRoute
             /${latitude}/${longitude}
-            /${order.restaurantId.location.coordinates[1]}/${order.restaurantId.location.coordinates[0]}
-            /${order.shippingAddress.latitude}/${order.shippingAddress.longitude}`);
+            /${order?.restaurantId.location.coordinates[1]}/${order?.restaurantId.location.coordinates[0]}
+            /${order?.shippingAddress.latitude}/${order?.shippingAddress.longitude}`);
             try {
               
               const response = await axios.get(
-                `http://localhost:4000/gps/deliveryRoute/${latitude}/${longitude}/${order.restaurantId.location.coordinates[1]}/${order.restaurantId.location.coordinates[0]}/${order.shippingAddress.latitude}/${order.shippingAddress.longitude}`,
+                `http://localhost:4000/gps/deliveryRoute/${latitude}/${longitude}/${order?.restaurantId.location.coordinates[1]}/${order?.restaurantId.location.coordinates[0]}/${order?.shippingAddress.latitude}/${order?.shippingAddress.longitude}`,
                 {
                   headers: {'Content-Type': 'application/json'},
                   withCredentials: true,
@@ -177,7 +177,7 @@ const CurrentOrder = () => {
     );
   }
 
-  if (!order || !order._id) {
+  if (!order || !order?._id) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50 px-6">
         <View className="bg-white rounded-2xl shadow-md px-8 py-10 items-center border border-gray-200">
@@ -209,7 +209,7 @@ const CurrentOrder = () => {
     <View className="flex-1">
       <Text className="text-gray-900 font-semibold">Delivery Address</Text>
       <Text className="text-gray-600 text-sm leading-snug">
-        {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.country}
+        {order?.shippingAddress?.address}, {order?.shippingAddress?.city}, {order?.shippingAddress?.country}
       </Text>
     </View>
   </View>
@@ -219,12 +219,12 @@ const CurrentOrder = () => {
     <View className="flex-row items-center flex-1 space-x-2">
       <Icon name="progress-clock" size={20} color="#9CA3AF" />
       <Text className="text-gray-800 text-sm">
-        <Text className="font-semibold">Status: </Text>{order.status}
+        <Text className="font-semibold">Status: </Text>{order?.status}
       </Text>
     </View>
     <View className="flex-row items-center space-x-2">
       <Text className="text-gray-800 text-sm">
-        <Text className="font-semibold">ETA: </Text>{order.eta} min
+        <Text className="font-semibold">ETA: </Text>{order?.eta} min
       </Text>
       <Icon name="clock-outline" size={20} color="#9CA3AF" />
     </View>
@@ -235,12 +235,12 @@ const CurrentOrder = () => {
     <View className="flex-row items-center flex-1 space-x-2">
       <Icon name="human" size={20} color="#9CA3AF" />
       <Text className="text-gray-800 text-sm">
-        <Text className="font-semibold">Customer: </Text>{order.userId.username}
+        <Text className="font-semibold">Customer: </Text>{order?.userId?.username}
       </Text>
     </View>
     <View className="flex-row items-center space-x-2">
       <Text className="text-gray-800 text-sm">
-        <Text className="font-semibold">Contact: </Text>{order.userId.phoneNumber}
+        <Text className="font-semibold">Contact: </Text>{order?.userId?.phoneNumber}
       </Text>
       <Icon name="cellphone" size={20} color="#9CA3AF" />
     </View>

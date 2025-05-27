@@ -23,8 +23,15 @@ export const LocationContextProvider = ({children}) => {
   const [longitude, setLongitude] = useState(0);
   const [address, setAddress] = useState('');
   const [realTimeTrackerId, setRealTimeTrackerId] = useState(null);
+  const [currentOfferTracker, setCurrentOfferTracker] = useState({});
+  const currentOfferTrackerRef = useRef(currentOfferTracker);
   const {authUser} = useAuthUserContext();
   const watchIdRef = useRef(null);
+
+  useEffect(() => {
+    console.log('setting currentOfferTrackerRef.current to: ', currentOfferTracker);
+    currentOfferTrackerRef.current = currentOfferTracker;
+  }, [currentOfferTracker]);
 
   useEffect(() => {
     let isMounted = true; // Prevents memory leaks
@@ -72,7 +79,20 @@ export const LocationContextProvider = ({children}) => {
             rating: authUser.user.rating,
           },
         );
-        console.log('Location sent!', response);
+        console.log('Location sent!', response?.data);
+
+        if (currentOfferTrackerRef.current) {
+          console.log('current Offer tracker ', currentOfferTrackerRef.current);
+          const response = await axios.get(
+            `http://localhost:4000/gps/realTimeUpdate/${latitude}/${longitude}/${currentOfferTrackerRef.current}`,
+            {
+              headers: {'Content-Type': 'application/json'},
+              withCredentials: true,
+            },
+          );
+        } else {
+          console.log("currentOfferTracker is not set or does not have userId");
+        }
       } catch (error) {
         console.error('Error sending location:', error);
       }
@@ -126,6 +146,10 @@ export const LocationContextProvider = ({children}) => {
     };
   }, [authUser]); // Only runs when authUser changes
 
+  useEffect(()=>{
+console.log("Current Offer Tracker Updated: ", currentOfferTracker);
+  },[currentOfferTracker])
+
   return (
     <LocationContext.Provider
       value={{
@@ -136,7 +160,9 @@ export const LocationContextProvider = ({children}) => {
         address,
         setAddress,
         realTimeTrackerId,
-        setRealTimeTrackerId
+        setRealTimeTrackerId,
+        currentOfferTracker,
+        setCurrentOfferTracker,
       }}>
       {children}
     </LocationContext.Provider>
