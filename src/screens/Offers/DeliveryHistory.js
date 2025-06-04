@@ -76,25 +76,25 @@ const DeliveryHistory = () => {
                         </Text>
                         <Text
                             className={`text-sm font-medium ${
-                                order.status === "Delivered"
+                                order?.status === "Delivered"
                                     ? "text-green-600"
-                                    : order.status === "Pending"
+                                    : order?.status === "Pending"
                                     ? "text-yellow-600"
                                     : "text-red-600"
                             }`}
                         >
-                            {order.status}
+                            {order?.status}
                         </Text>
                     </View>
 
                     <Text className="text-gray-600 mb-1">
-                        <Text className="font-semibold">Customer:</Text> {order.userId.username}
+                        <Text className="font-semibold">Customer:</Text> {order?.userId?.username}
                     </Text>
                     <Text className="text-gray-600 mb-1">
-                        <Text className="font-semibold">Delivery Address:</Text> {order.shippingAddress.address}
+                        <Text className="font-semibold">Delivery Address:</Text> {order?.shippingAddress?.address}
                     </Text>
                     <Text className="text-gray-600">
-                        <Text className="font-semibold">ETA:</Text> {order.eta}
+                        <Text className="font-semibold">ETA:</Text> {order?.eta}
                     </Text>
                 </View>
             ))}

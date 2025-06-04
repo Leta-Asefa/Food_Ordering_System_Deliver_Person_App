@@ -19,6 +19,7 @@ const UserSettings = () => {
     username: authUser?.user?.username ?? "",
     phoneNumber: authUser?.user?.phoneNumber ?? "",
     vehicle: authUser?.user?.vehicle ?? "",
+    employer: authUser?.user?.employer ?? "", // Add employer to form state
   });
 
   // Function to update profile photo
@@ -77,22 +78,28 @@ const UserSettings = () => {
   };
 
   const updateUserInfo = async () => {
-
     try {
       const response = await axios.put(`http://localhost:4000/user/${authUser.user._id}`, {
         username: form.username,
         phoneNumber: form.phoneNumber,
-        vehicle: form.vehicle
+        vehicle: form.vehicle,
+        employer: form.employer, // Send employer
       });
 
       if (response.data.message) {
         setEditable(false)
         Alert.alert("Profile Updated", "Your personal info has been updated.");
-        setAuthUser({ ...authUser, user: { ...authUser.user, username: form.username, phoneNumber: form.phoneNumber, vehicle: form.vehicle } });
+        setAuthUser({ 
+          ...authUser, 
+          user: { 
+            ...authUser.user, 
+            username: form.username, 
+            phoneNumber: form.phoneNumber, 
+            vehicle: form.vehicle,
+            employer: form.employer, // Update employer in context
+          } 
+        });
       }
-
-
-
     } catch (error) {
       console.log(error)
     }
@@ -190,6 +197,16 @@ const UserSettings = () => {
               placeholderTextColor="gray"
               value={form.vehicle}
               onChangeText={(text) => setForm({ ...form, vehicle: text })}
+              editable={editable}
+            />
+
+            {/* Employer Input */}
+            <TextInput
+              className="border border-gray-300 bg-white p-3 rounded-md text-gray-800 mt-3"
+              placeholder="Enter Employer"
+              placeholderTextColor="gray"
+              value={form.employer}
+              onChangeText={(text) => setForm({ ...form, employer: text })}
               editable={editable}
             />
 

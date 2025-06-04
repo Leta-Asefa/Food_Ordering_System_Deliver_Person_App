@@ -36,15 +36,29 @@ export default function Signup({navigation}) {
     .map(() => useRef(new Animated.Value(1)).current);
 
   const handleSendOtp = async () => {
-    if (!phone) {
-      Alert.alert('Error', 'Please enter your phone number.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match. Please check again.');
-        return;
-      }
+    // Phone number validation
+       if (!phone) {
+         Alert.alert('Error', 'Please enter your phone number.');
+         return;
+       }
+       if (!/^([97])\d{8}$/.test(phone)) {
+         Alert.alert('Error', 'Phone number must start with 9 or 7 and be 9 digits long.');
+         return;
+       }
+       // Username validation
+       if (!username.trim()) {
+         Alert.alert('Error', 'Username cannot be empty.');
+         return;
+       }
+       // Password validation
+       if (password.length < 8) {
+         Alert.alert('Error', 'Password must be at least 8 characters long.');
+         return;
+       }
+       if (password !== confirmPassword) {
+           Alert.alert('Error', 'Passwords do not match. Please check again.');
+           return;
+         }
 
     try {
       await axios.post(
@@ -92,7 +106,7 @@ export default function Signup({navigation}) {
       console.log('twilio response', res.data);
 
       // After OTP verified, signup user
-      const formData = {username, phoneNumber: phone, password};
+      const formData = {username, phoneNumber: phone, password,role:'delivery',employer:'us'};
       const response = await axios.post(
         'http://localhost:4000/user/signup',
         formData,
